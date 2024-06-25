@@ -10,6 +10,8 @@ from openpyxl.styles import Alignment,Font
 from openpyxl.worksheet.hyperlink import Hyperlink
 import os
 
+from GAS import getOriginData
+
 def get_duration(start,end):
 
     API_KEY = '5b3ce3597851110001cf6248fa6ab9549f3740f3bc50db83029c37a1'
@@ -137,7 +139,40 @@ def render_page1():
                 
     
     # st.json(st.session_state)
-            
+
+def render_page3():
+
+    st.subheader("工程概要表")
+
+    df=getOriginData()
+    df_edit = st.data_editor(df,hide_index=True)
+
+    df_meeting=df_edit[df_edit['meeting']]
+
+    st.markdown("---")
+
+    st.subheader("MAP")
+
+    df_result=[]
+
+    for index,row in df_meeting.iterrows():
+        st.write(f"ID: {row['id']}, 水路名稱: {row['inf.work_name']}, E: {row['coords.2.lon']}, N: {row['coords.2.lat']}")
+        new_row=[
+            {
+            "序號": None,
+            "水路名稱": row['inf.work_name'], 
+            "經度": row['coords.2.lat'],
+            "緯度": row['coords.2.lon'],
+            "停留時間": 20.0,
+            "移動時間":None,
+            "計算時間":None
+            }
+        ]
+        df_result.append(new_row)
+
+    st.session_state['routes']= pd.DataFrame(df_result)
+
+
 def render_page2():
 
     st.write('#### 會勘清單')
@@ -325,15 +360,17 @@ def main():
     if 'showMap' not in st.session_state:
         st.session_state['showMap'] = True
 
-    initial_data = [
-        { "序號": None,"水路名稱": "北月眉小排2-1", "經度": 120.286, "緯度": 23.6901, "停留時間": 20.0,"移動時間":None,"計算時間":None},
-        { "序號": None,"水路名稱": "路利潭中排一", "經度": 120.2368, "緯度": 23.7008, "停留時間": 20.0,"移動時間":None,"計算時間":None},
-        { "序號": None,"水路名稱": "丘厝小排2-4", "經度": 120.2037, "緯度": 23.6724, "停留時間": 20.0,"移動時間":None,"計算時間":None},
-        { "序號": None,"水路名稱": "牛厝中排1", "經度": 120.2066, "緯度": 23.6667, "停留時間": 20.0,"移動時間":None,"計算時間":None},
-    ]
+    # initial_data = [
+    #     { "序號": None,"水路名稱": "北月眉小排2-1", "經度": 120.286, "緯度": 23.6901, "停留時間": 20.0,"移動時間":None,"計算時間":None},
+    #     { "序號": None,"水路名稱": "路利潭中排一", "經度": 120.2368, "緯度": 23.7008, "停留時間": 20.0,"移動時間":None,"計算時間":None},
+    #     { "序號": None,"水路名稱": "丘厝小排2-4", "經度": 120.2037, "緯度": 23.6724, "停留時間": 20.0,"移動時間":None,"計算時間":None},
+    #     { "序號": None,"水路名稱": "牛厝中排1", "經度": 120.2066, "緯度": 23.6667, "停留時間": 20.0,"移動時間":None,"計算時間":None},
+    # ]
+
+    
 
     if 'routes' not in st.session_state:
-        st.session_state['routes'] = initial_data
+        st.session_state['routes'] = [] #initial_data
 
     with st.sidebar:
 
@@ -349,6 +386,8 @@ def main():
             st.session_state.current_page = 'page1'  
         if st.button("安排會勘地點"):
             st.session_state.current_page = 'page2'
+        if st.button("工程概要表"):
+            st.session_state.current_page = 'page3'
             
         st.markdown("---")
         st.subheader("操作按鈕")
@@ -357,6 +396,8 @@ def main():
         render_page1()
     elif st.session_state.current_page == 'page2':
         render_page2()
+    elif st.session_state.current_page == 'page3':
+        render_page3()
 
 
     # print(st.session_state)
