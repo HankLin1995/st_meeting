@@ -14,7 +14,7 @@ from GAS import getOriginData
 
 def get_duration(start,end):
 
-    API_KEY = '5b3ce3597851110001cf6248fa6ab9549f3740f3bc50db83029c37a1'
+    API_KEY = st.secrets["OPEN_ROUTE_API_KEY"]
 
     # 初始化OpenRouteService客户端
     client = openrouteservice.Client(key=API_KEY)

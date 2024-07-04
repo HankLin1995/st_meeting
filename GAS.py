@@ -10,7 +10,7 @@ def format_date(timestamp):
 @st.cache_data
 def getOriginData():
 
-    url = 'https://script.google.com/macros/s/AKfycbz6CWS_HnAATXAMwJBJhIELbAoWsgcYJFkNxpgldA96m1SkWVeEgy4l1EyXeyW60gmK/exec'
+    url = st.secrets["GAS_URL"]
 
     #    发送GET请求
     response = requests.get(url)
