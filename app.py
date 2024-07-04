@@ -146,7 +146,7 @@ def render_page3():
 
     df=getOriginData()
 
-    print(df)
+    # print(df)
 
     df_edit = st.data_editor(df,hide_index=True)
 
@@ -154,7 +154,7 @@ def render_page3():
 
     st.markdown("---")
 
-    st.subheader("MAP")
+    st.subheader("選取內容")
 
     df_result=[]
 
@@ -193,7 +193,7 @@ def render_page3():
 
     st.session_state['routes']= df_result
 
-    st.json(df_result)
+    # st.json(df_result)
 
 def render_page2():
 
@@ -273,8 +273,8 @@ def render_page2():
             if len(list_filter) > 0:
 
                 dict_filter= list_filter[0]
-                print(dict_filter)
-                print(dict_filter['鄉鎮'])
+                # print(dict_filter)
+                # print(dict_filter['鄉鎮'])
 
                 serial_number = item[0]
                 waterway_name = item[1]
@@ -397,6 +397,9 @@ def main():
     if 'current_page' not in st.session_state:
         st.session_state['current_page'] = 'page1'
 
+    if 'code' not in st.session_state:
+        st.session_state['code'] = ''
+
     # 用來暫存點擊的座標
     if 'coords' not in st.session_state:
         st.session_state['coords'] = []
@@ -423,18 +426,23 @@ def main():
         st.write("這是用於提報計畫時的估算工具")
         st.info("作者:**林宗漢**")
 
-        st.markdown("---")
-        st.subheader("選擇頁面")
 
-        # if st.button("新增會勘地點"):
-            # st.session_state.current_page = 'page1'  
-        if st.button("工程概要表"):
-            st.session_state.current_page = 'page3'
-        if st.button("安排會勘地點"):
-            st.session_state.current_page = 'page2'
-            
-        st.markdown("---")
-        st.subheader("操作按鈕")
+        st.session_state.code=st.text_input("請輸入密碼",type="password")
+
+        if st.session_state.code == st.secrets["CODE"]:
+
+            st.markdown("---")
+
+            st.subheader("選擇頁面")
+            # if st.button("新增會勘地點"):
+                # st.session_state.current_page = 'page1'  
+            if st.button("工程概要表"):
+                st.session_state.current_page = 'page3'
+            if st.button("安排會勘地點"):
+                st.session_state.current_page = 'page2'
+                
+            st.markdown("---")
+            st.subheader("操作按鈕")
 
 
     if st.session_state.current_page == 'page2':
