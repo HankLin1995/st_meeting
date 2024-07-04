@@ -27,6 +27,9 @@ def getOriginData():
 
         desired_headers = [
         "id",
+        "inf.work_place2",
+        "inf.work_place_detail",
+        "inf.work_place_water",
         "inf.work_station",
         "inf.work_name",
         "inf.work_start_date",
