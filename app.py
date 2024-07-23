@@ -426,7 +426,6 @@ def main():
         st.write("這是用於提報計畫時的估算工具")
         st.info("作者:**林宗漢**")
 
-
         st.session_state.code=st.text_input("請輸入密碼",type="password")
 
         if st.session_state.code == st.secrets["CODE"]:
