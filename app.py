@@ -66,7 +66,38 @@ def render_page1():
 
         st.subheader("會勘基本資料")
         route_name = st.text_input('水路名稱')
+        route_lon = st.text_input("經度")
+        route_lat = st.text_input("緯度")
 
+        if st.button("儲存位置"):
+            # Validate that both latitude and longitude are provided
+            if route_lat and route_lon:
+                # Append new coordinates to the list
+                st.session_state['coords'].append({'lat': route_lat, 'lng': route_lon})
+
+                new_row = {
+                    "序號": None,
+                    "鄉鎮": None,
+                    "水路名稱": route_name,
+                    "工作站": None,
+                    "水路長度": None,
+                    "概估經費": 0,
+                    "工程用地": None,
+                    "水路用地": None,
+                    "最佳施工期": None,
+                    "經度": float(route_lat),
+                    "緯度": float(route_lon),
+                    "停留時間": 20.0,
+                    "移動時間": None,
+                    "計算時間": None
+                }
+
+                # Add the new row to the list
+                st.session_state['routes'].append(new_row)
+                st.success("位置已儲存!")
+            else:
+                st.error("請確保經度和緯度都已填寫。")
+            
     with col2:
 
         st.subheader("會勘集合地點")
@@ -103,7 +134,7 @@ def render_page1():
         # 顯示 Folium 地圖並捕捉點擊事件
         map_data = st_folium(map, width=1000, height=500)
 
-        add_button=st.button('新增會勘位置',type='primary')
+        # add_button=st.button('新增會勘位置',type='primary')
 
         # 如果有點擊事件，獲取點擊的位置
         if map_data and map_data['last_clicked']:
@@ -115,49 +146,49 @@ def render_page1():
 
     # 顯示儲存按鈕
 
-    if add_button:
-        if route_name=="":
-            st.sidebar.warning("請輸入水路名稱")
-        else:
-        # if len(st.session_state['coords'])==0: 
-            st.session_state['coords'].append({'lat': lat, 'lng': lng})
-            # new_row = {'序號': None, '水路名稱': route_name, '經度': lon, '緯度': lat, '停留時間': None, '移動時間': None}
+    # if add_button:
+    #     if route_name=="":
+    #         st.sidebar.warning("請輸入水路名稱")
+    #     else:
+    #     # if len(st.session_state['coords'])==0: 
+    #         # st.session_state['coords'].append({'lat': lat, 'lng': lng})
+    #         # new_row = {'序號': None, '水路名稱': route_name, '經度': lon, '緯度': lat, '停留時間': None, '移動時間': None}
             
-            # new_row = {
-            # "序號": None,
-            # "水路名稱": route_name,
-            # "經度": lng,
-            # "緯度": lat,
-            # "停留時間": None,
-            # "移動時間": None
-            # }
+    #         # new_row = {
+    #         # "序號": None,
+    #         # "水路名稱": route_name,
+    #         # "經度": lng,
+    #         # "緯度": lat,
+    #         # "停留時間": None,
+    #         # "移動時間": None
+    #         # }
 
-            new_row={
-            "序號": None,
-            "鄉鎮":None,
-            "水路名稱": route_name,
-            "工作站":None,
-            "水路長度":None,
-            "概估經費":0,
-            "工程用地":None,
-            "水路用地":None,
-            "最佳施工期":None,
-            "經度": lng,
-            "緯度": lat,
-            "停留時間": 20.0,
-            "移動時間":None,
-            "計算時間":None
-            }
+    #         new_row={
+    #         "序號": None,
+    #         "鄉鎮":None,
+    #         "水路名稱": route_name,
+    #         "工作站":None,
+    #         "水路長度":None,
+    #         "概估經費":0,
+    #         "工程用地":None,
+    #         "水路用地":None,
+    #         "最佳施工期":None,
+    #         "經度": st.session_state['coords']['lng'],
+    #         "緯度": st.session_state['coords']['lat'],
+    #         "停留時間": 20.0,
+    #         "移動時間":None,
+    #         "計算時間":None
+    #         }
 
-            # 将新的行添加到列表中
-            st.session_state['routes'].append(new_row)
-            st.session_state['showMap']=False
+    #         # 将新的行添加到列表中
+    #         st.session_state['routes'].append(new_row)
+    #         st.session_state['showMap']=False
             
-            # st.session_state['routes'] = st.session_state['routes'].append(new_row, ignore_index=True)
-            st.rerun()
-        # else:
-            # st.write(len(st.session_state['coords'])==0)
-            # st.sidebar.warning("會勘地點已經被安排")
+    #         # st.session_state['routes'] = st.session_state['routes'].append(new_row, ignore_index=True)
+    #         st.rerun()
+    #     # else:
+    #         # st.write(len(st.session_state['coords'])==0)
+    #         # st.sidebar.warning("會勘地點已經被安排")
                 
     
     # st.json(st.session_state)
@@ -410,7 +441,7 @@ def render_page2():
 
 def main():
 
-    SYSTEM_VERSION="V0.3.0"
+    SYSTEM_VERSION="V0.3.1"
 
     st.set_page_config(
         page_title="會勘地點安排"+SYSTEM_VERSION,
