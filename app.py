@@ -60,53 +60,58 @@ def get_coordinates(waterway_name):
 
 def render_page1():
 
-    st.subheader("會勘基本資料")
+    col1,col2=st.columns([1,3])
 
-    route_name = st.text_input('水路名稱')
+    with col1:
 
-    st.subheader("會勘集合地點")
+        st.subheader("會勘基本資料")
+        route_name = st.text_input('水路名稱')
 
-    # 定義地圖的初始位置和縮放級別
-    initial_location = [23.7089, 120.5406]  # 這裡使用台中的經緯度
-    initial_zoom = 10
+    with col2:
 
-    # 添加點擊事件處理
-    def add_marker(folium_map, lat, lon, label):
-        folium.Marker(
-            location=[lat, lon],
-            popup=f"{label}<br>經度: {lon}<br>緯度: {lat}",
-            icon=folium.Icon(icon="info-sign")
-        ).add_to(folium_map)
+        st.subheader("會勘集合地點")
 
-    # 創建一個 Folium 地圖
-    map = folium.Map(location=initial_location, zoom_start=initial_zoom)
+        # 定義地圖的初始位置和縮放級別
+        initial_location = [23.7089, 120.5406]  # 這裡使用台中的經緯度
+        initial_zoom = 10
 
-    # 顯示儲存的標記
-    for i, coord in enumerate(st.session_state['coords']):
-        add_marker(map, coord['lat'], coord['lng'], label=f"點 {i + 1}")
+        # 添加點擊事件處理
+        def add_marker(folium_map, lat, lon, label):
+            folium.Marker(
+                location=[lat, lon],
+                popup=f"{label}<br>經度: {lon}<br>緯度: {lat}",
+                icon=folium.Icon(icon="info-sign")
+            ).add_to(folium_map)
 
-    if st.toggle("顯示紀錄", st.session_state['showMap']):
+        # 創建一個 Folium 地圖
+        map = folium.Map(location=initial_location, zoom_start=initial_zoom)
 
-        df = pd.DataFrame(st.session_state.routes)
+        # 顯示儲存的標記
+        for i, coord in enumerate(st.session_state['coords']):
+            add_marker(map, coord['lat'], coord['lng'], label=f"點 {i + 1}")
 
-        for idx, row in df.iterrows():
-            folium.Marker([row['緯度'], row['經度']], 
-                        popup=f"{row['水路名稱']} ({row['經度']}, {row['緯度']})",
-                        tooltip=row['水路名稱']).add_to(map)
+        if st.toggle("顯示紀錄", st.session_state['showMap']):
+
+            df = pd.DataFrame(st.session_state.routes)
+
+            for idx, row in df.iterrows():
+                folium.Marker([row['緯度'], row['經度']], 
+                            popup=f"{row['水路名稱']} ({row['經度']}, {row['緯度']})",
+                            tooltip=row['水路名稱']).add_to(map)
 
 
-    # 顯示 Folium 地圖並捕捉點擊事件
-    map_data = st_folium(map, width=1000, height=500)
+        # 顯示 Folium 地圖並捕捉點擊事件
+        map_data = st_folium(map, width=1000, height=500)
 
-    add_button=st.sidebar.button('新增會勘位置',type='primary')
+        add_button=st.button('新增會勘位置',type='primary')
 
-    # 如果有點擊事件，獲取點擊的位置
-    if map_data and map_data['last_clicked']:
-        lat = round(map_data['last_clicked']['lat'],6)
-        lng = round(map_data['last_clicked']['lng'],6) # map_data['last_clicked']['lng']
+        # 如果有點擊事件，獲取點擊的位置
+        if map_data and map_data['last_clicked']:
+            lat = round(map_data['last_clicked']['lat'],6)
+            lng = round(map_data['last_clicked']['lng'],6) # map_data['last_clicked']['lng']
 
-        # 顯示暫存的坐標
-        st.sidebar.write(f"X座標: {lat}, Y座標: {lng}")
+            # 顯示暫存的坐標
+            st.write(f"X座標: {lat}, Y座標: {lng}")
 
     # 顯示儲存按鈕
 
@@ -114,28 +119,45 @@ def render_page1():
         if route_name=="":
             st.sidebar.warning("請輸入水路名稱")
         else:
-            if len(st.session_state['coords'])==0: 
-                st.session_state['coords'].append({'lat': lat, 'lng': lng})
-                # new_row = {'序號': None, '水路名稱': route_name, '經度': lon, '緯度': lat, '停留時間': None, '移動時間': None}
-                
-                new_row = {
-                "序號": None,
-                "水路名稱": route_name,
-                "經度": lng,
-                "緯度": lat,
-                "停留時間": None,
-                "移動時間": None
-                }
+        # if len(st.session_state['coords'])==0: 
+            st.session_state['coords'].append({'lat': lat, 'lng': lng})
+            # new_row = {'序號': None, '水路名稱': route_name, '經度': lon, '緯度': lat, '停留時間': None, '移動時間': None}
+            
+            # new_row = {
+            # "序號": None,
+            # "水路名稱": route_name,
+            # "經度": lng,
+            # "緯度": lat,
+            # "停留時間": None,
+            # "移動時間": None
+            # }
 
-                # 将新的行添加到列表中
-                st.session_state['routes'].append(new_row)
-                st.session_state['showMap']=False
-                
-                # st.session_state['routes'] = st.session_state['routes'].append(new_row, ignore_index=True)
-                st.rerun()
-            else:
-                # st.write(len(st.session_state['coords'])==0)
-                st.sidebar.warning("會勘地點已經被安排")
+            new_row={
+            "序號": None,
+            "鄉鎮":None,
+            "水路名稱": route_name,
+            "工作站":None,
+            "水路長度":None,
+            "概估經費":0,
+            "工程用地":None,
+            "水路用地":None,
+            "最佳施工期":None,
+            "經度": lng,
+            "緯度": lat,
+            "停留時間": 20.0,
+            "移動時間":None,
+            "計算時間":None
+            }
+
+            # 将新的行添加到列表中
+            st.session_state['routes'].append(new_row)
+            st.session_state['showMap']=False
+            
+            # st.session_state['routes'] = st.session_state['routes'].append(new_row, ignore_index=True)
+            st.rerun()
+        # else:
+            # st.write(len(st.session_state['coords'])==0)
+            # st.sidebar.warning("會勘地點已經被安排")
                 
     
     # st.json(st.session_state)
@@ -144,7 +166,11 @@ def render_page3():
 
     st.subheader("工程概要表")
 
-    df=getOriginData()
+    st.session_state.code=st.text_input("請輸入密碼",type="password")
+
+    if st.session_state.code == st.secrets["CODE"]:
+
+        df=getOriginData()
 
     # print(df)
 
@@ -244,7 +270,6 @@ def render_page2():
         st.session_state['routes'] = df.to_dict('records')
 
         st.rerun()
-
 
     if st.sidebar.button("行程表"):
 
@@ -385,7 +410,7 @@ def render_page2():
 
 def main():
 
-    SYSTEM_VERSION="V0.2.0"
+    SYSTEM_VERSION="V0.3.0"
 
     st.set_page_config(
         page_title="會勘地點安排"+SYSTEM_VERSION,
@@ -426,25 +451,34 @@ def main():
         st.write("這是用於提報計畫時的估算工具")
         st.info("作者:**林宗漢**")
 
-        st.session_state.code=st.text_input("請輸入密碼",type="password")
 
-        if st.session_state.code == st.secrets["CODE"]:
+        st.markdown("---")
 
-            st.markdown("---")
+        st.subheader("選擇頁面")
+        # if st.button("新增會勘地點"):
+            # st.session_state.current_page = 'page1'  
 
-            st.subheader("選擇頁面")
-            # if st.button("新增會勘地點"):
-                # st.session_state.current_page = 'page1'  
-            if st.button("工程概要表"):
-                st.session_state.current_page = 'page3'
-            if st.button("安排會勘地點"):
-                st.session_state.current_page = 'page2'
-                
-            st.markdown("---")
-            st.subheader("操作按鈕")
+        # st.session_state.code=st.text_input("請輸入密碼",type="password")
+
+        # if st.session_state.code == st.secrets["CODE"]:
+
+        # st.markdown("---")
+
+        # st.subheader("選擇頁面")
+        if st.button("新增會勘地點"):
+            st.session_state.current_page = 'page1'  
+        if st.button("安排會勘地點"):
+            st.session_state.current_page = 'page2'
+        if st.button("工程概要表"):
+            st.session_state.current_page = 'page3'
+
+        st.markdown("---")
+        st.subheader("操作按鈕")
 
 
-    if st.session_state.current_page == 'page2':
+    if st.session_state.current_page == 'page1':
+        render_page1()
+    elif st.session_state.current_page == 'page2':
         render_page2()
     elif st.session_state.current_page == 'page3':
         render_page3()
